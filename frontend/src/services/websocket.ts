@@ -11,8 +11,14 @@ class WebSocketClient {
       return;
     }
 
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws/dashboard`;
+    const envWsUrl = import.meta.env.VITE_WS_URL;
+    let wsUrl = '';
+    if (envWsUrl) {
+      wsUrl = `${envWsUrl}/ws/dashboard`;
+    } else {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      wsUrl = `${protocol}//${window.location.host}/ws/dashboard`;
+    }
 
     try {
       this.ws = new WebSocket(wsUrl);

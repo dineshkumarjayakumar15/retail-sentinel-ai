@@ -3,7 +3,8 @@ import {
   AnalyticsOverview, Video, RiskSettings 
 } from '../types';
 
-const API_BASE_URL = '/api';
+const BASE = import.meta.env.VITE_API_URL || '';
+const API_BASE_URL = `${BASE}/api`;
 
 async function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE_URL}${url}`, {
