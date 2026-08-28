@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Retail Sentinel AI — Production Intelligence System
 
 **Retail Sentinel AI** is an enterprise-grade AI-powered retail monitoring, video surveillance, customer tracking, and decision-support platform.
@@ -165,3 +166,7 @@ python ai-service/src/main.py process --video-id 1
 | Real-time Dashboard Updates | **PASS** | WebSocket `/ws/dashboard` pushes updates to React UI without refresh |
 | Customer Details View | **PASS** | Route `/customers/:id` displays subject timeline, stay duration, alerts |
 | Frontend Production Build | **PASS** | `npm run build` completed with 0 errors |
+=======
+# retail-sentinel-ai
+AI-powered real-time retail monitoring and suspicious behavior detection system
+>>>>>>> e8dc869baa1856050060be7035dd764fc63cf828
