@@ -18,6 +18,8 @@ export const Videos: React.FC = () => {
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const isVercelNoBackend = window.location.hostname.includes('vercel.app') && !(import.meta as any).env?.VITE_API_URL;
+
   const loadVideos = async () => {
     try {
       setLoading(true);
@@ -59,10 +61,17 @@ export const Videos: React.FC = () => {
       setUploading(true);
       setMessage(null);
       const uploaded = await apiService.uploadVideo(file);
-      setMessage({ text: `Video '${uploaded.original_filename}' uploaded successfully! Status: UPLOADED`, type: 'success' });
+      setMessage({ text: `Video '${uploaded.original_filename}' uploaded successfully! AI processing initiated.`, type: 'success' });
       await loadVideos();
     } catch (err: any) {
-      setMessage({ text: err.message || 'Failed to upload video', type: 'error' });
+      if (isVercelNoBackend) {
+        setMessage({ 
+          text: 'Vercel Hosted Demo Notice: This Vercel deployment only hosts the frontend UI. The Python backend (OpenCV/YOLO/ByteTrack) runs locally at http://localhost:8002. Please use http://localhost:5173 to test live video uploads.', 
+          type: 'error' 
+        });
+      } else {
+        setMessage({ text: err.message || 'Failed to upload video feed', type: 'error' });
+      }
     } finally {
       setUploading(false);
     }
@@ -88,6 +97,22 @@ export const Videos: React.FC = () => {
           Upload video files and execute OpenCV + YOLO + ByteTrack intelligence processing
         </p>
       </div>
+
+      {/* Vercel Host Notice Banner */}
+      {isVercelNoBackend && (
+        <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex items-start space-x-3 text-xs text-amber-300 nova-glass">
+          <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <h4 className="font-bold text-amber-200">Vercel Deployment Notice</h4>
+            <p className="text-slate-300 leading-relaxed">
+              This Vercel URL serves the static frontend UI. The computer vision pipeline (OpenCV, YOLO v8, ByteTrack, PyTorch) requires a persistent backend server.
+            </p>
+            <p className="text-amber-400 font-semibold">
+              👉 To test full live video uploads: Open <code className="bg-slate-900 px-1.5 py-0.5 rounded font-mono text-cyan-300">http://localhost:5173</code> in your local browser where your FastAPI server is running.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Upload Zone */}
       <GlassCard title="Upload Surveillance Video Feed">
