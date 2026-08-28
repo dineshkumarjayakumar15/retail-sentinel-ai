@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+venv/
+ENV/
+.env
+
+# Database & Uploads
+*.db
+*.sqlite3
+retail_sentinel.db
+uploads/*
+!uploads/.gitkeep
+
+# Node / React
+node_modules/
+frontend/dist/
+frontend/dist-ssr/
+*.local
+.vscode/
+.idea/
+.DS_Store
+# Runtime video files
+uploads/*.mp4
+backend/uploads/*.mp4
+data/processed/*.mp4
+backend/data/processed/*.mp4
+
+# Generated data
+data/dataset_inspection_report.json
+
+# Model files - don't commit duplicate/runtime models
+backend/yolov8n.pt

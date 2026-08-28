@@ -1,0 +1,30 @@
+{
+  "entrance": {
+    "id": "entrance_zone",
+    "name": "Main Entrance",
+    "type": "ENTRANCE",
+    "bounds": { "x1": 0.0, "y1": 0.0, "x2": 0.25, "y2": 1.0 },
+    "coordinates": [[0, 0], [320, 0], [320, 720], [0, 720]]
+  },
+  "shopping_area": {
+    "id": "shopping_area_zone",
+    "name": "General Shopping Area",
+    "type": "SHELF",
+    "bounds": { "x1": 0.25, "y1": 0.0, "x2": 0.65, "y2": 1.0 },
+    "coordinates": [[320, 0], [832, 0], [832, 720], [320, 720]]
+  },
+  "shelf_zone": {
+    "id": "electronics_shelf_zone",
+    "name": "High Value Shelf",
+    "type": "SHELF",
+    "bounds": { "x1": 0.65, "y1": 0.0, "x2": 0.85, "y2": 1.0 },
+    "coordinates": [[832, 0], [1088, 0], [1088, 720], [832, 720]]
+  },
+  "exit": {
+    "id": "exit_gate_zone",
+    "name": "Store Exit",
+    "type": "EXIT",
+    "bounds": { "x1": 0.85, "y1": 0.0, "x2": 1.0, "y2": 1.0 },
+    "coordinates": [[1088, 0], [1280, 0], [1280, 720], [1088, 720]]
+  }
+}

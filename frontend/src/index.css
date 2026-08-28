@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-dark: #070b14;
+  --bg-surface: #0f172a;
+  --bg-surface-border: rgba(255, 255, 255, 0.08);
+  --accent-cyan: #06b6d4;
+  --accent-blue: #0ea5e9;
+  --accent-violet: #8b5cf6;
+  --status-emerald: #10b981;
+  --status-amber: #f59e0b;
+  --status-rose: #f43f5e;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-dark);
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Nova Glass Card & Panel Styling */
+.nova-glass {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.nova-glass-hover {
+  transition: all 0.2s ease-in-out;
+}
+.nova-glass-hover:hover {
+  border-color: rgba(6, 182, 212, 0.3);
+  box-shadow: 0 12px 40px 0 rgba(6, 182, 212, 0.08);
+}
+
+/* Global Form Controls & High Contrast Inputs for Dark Nova Theme */
+input, select, textarea, .glass-input, .nova-input {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease-in-out;
+}
+
+input::placeholder, select::placeholder, textarea::placeholder {
+  color: #64748b !important;
+}
+
+input:focus, select:focus, textarea:focus, .glass-input:focus, .nova-input:focus {
+  outline: none !important;
+  border-color: #06b6d4 !important;
+  box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.25) !important;
+}
+
+input:disabled, select:disabled, textarea:disabled {
+  background-color: rgba(15, 23, 42, 0.5) !important;
+  color: #64748b !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+  cursor: not-allowed;
+}
+
+/* Select Option Dropdown Contrast */
+select option {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+/* Subtle Controlled Neon Accents */
+.nova-neon-glow {
+  box-shadow: 0 0 15px -3px rgba(6, 182, 212, 0.35);
+}
+
+.nova-neon-text {
+  text-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #070b14;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
