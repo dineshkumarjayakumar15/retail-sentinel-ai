@@ -11,7 +11,7 @@ class WebSocketClient {
       return;
     }
 
-    const envWsUrl = import.meta.env.VITE_WS_URL;
+    const envWsUrl = (import.meta as any).env?.VITE_WS_URL;
     let wsUrl = '';
     if (envWsUrl) {
       wsUrl = `${envWsUrl}/ws/dashboard`;

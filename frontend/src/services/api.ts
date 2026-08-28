@@ -3,7 +3,7 @@ import {
   AnalyticsOverview, Video, RiskSettings 
 } from '../types';
 
-const BASE = import.meta.env.VITE_API_URL || '';
+const BASE = (import.meta as any).env?.VITE_API_URL || '';
 const API_BASE_URL = `${BASE}/api`;
 
 async function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
