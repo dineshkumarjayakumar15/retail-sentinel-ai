@@ -1,6 +1,6 @@
 import { 
   DashboardSummary, Customer, CustomerTimeline, Alert, Incident, 
-  AnalyticsOverview, Video, RiskSettings 
+  AnalyticsOverview, Video, RiskSettings, Event
 } from '../types';
 
 const BASE = (import.meta as any).env?.VITE_API_URL || '';
@@ -42,6 +42,10 @@ export const apiService = {
   getCustomerById: (id: number) => fetchJSON<Customer>(`/customers/${id}`),
 
   getCustomerTimeline: (id: number) => fetchJSON<CustomerTimeline>(`/customers/${id}/timeline`),
+
+  // Events
+  getEvents: (videoId?: number) => 
+    fetchJSON<Event[]>(videoId ? `/events/video/${videoId}` : '/events'),
 
   // Alerts
   getAlerts: (status?: string, severity?: string) => {

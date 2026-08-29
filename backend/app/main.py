@@ -32,9 +32,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount Static Uploads directory for video preview
+# Mount Static Uploads directory for raw video feed preview
 if os.path.exists(settings.UPLOAD_DIR):
     app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
+
+# Mount Static Processed & Data directory for AI annotated video playback
+if os.path.exists(settings.PROCESSED_VIDEO_DIR):
+    app.mount("/data/processed", StaticFiles(directory=settings.PROCESSED_VIDEO_DIR), name="processed_videos")
+
+data_dir = str(settings.PROJECT_ROOT / "data")
+if os.path.exists(data_dir):
+    app.mount("/data", StaticFiles(directory=data_dir), name="data")
 
 # Include Routers
 app.include_router(health.router)

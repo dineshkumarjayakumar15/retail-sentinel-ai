@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Users, AlertTriangle, ShieldAlert, Activity, ArrowRight, Video, RefreshCw, Zap
+  Users, AlertTriangle, ShieldAlert, Activity, ArrowRight, Video, RefreshCw, Zap, ShieldCheck, FileText
 } from 'lucide-react';
 import { apiService } from '../services/api';
 import { wsClient } from '../services/websocket';
@@ -28,7 +28,7 @@ export const Dashboard: React.FC = () => {
         apiService.getVideos().catch(() => [])
       ]);
       setData(summary);
-      setRecentVideos(videos.slice(0, 3));
+      setRecentVideos(videos.slice(0, 4));
       setEventsTimeline(summary.recent_events || []);
     } catch (err: any) {
       console.error('Error fetching dashboard summary:', err);
@@ -41,7 +41,7 @@ export const Dashboard: React.FC = () => {
   useEffect(() => {
     loadData();
 
-    // Polling interval to auto-refresh dashboard telemetry every 3 seconds
+    // Auto-refresh dashboard telemetry every 3 seconds
     const interval = setInterval(() => {
       loadData(true);
     }, 3000);
@@ -88,8 +88,32 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="space-y-8">
       
-      {/* LEVEL 1 — Top Metric Overview Cards (4 Key Metrics) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      {/* TITLE */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-100 tracking-tight flex items-center space-x-3">
+            <span>Executive Command Center</span>
+            <span className="flex items-center space-x-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 nova-neon-glow">
+              <Zap className="w-3.5 h-3.5 animate-pulse" />
+              <span>Live Telemetry</span>
+            </span>
+          </h1>
+          <p className="text-xs text-slate-400 mt-1">
+            Real-time retail surveillance telemetry & behavioral risk monitoring
+          </p>
+        </div>
+
+        <button
+          onClick={() => loadData()}
+          className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl text-xs font-semibold border border-slate-800 flex items-center space-x-2 transition-all"
+        >
+          <RefreshCw className="w-4 h-4" />
+          <span>Sync Database</span>
+        </button>
+      </div>
+
+      {/* TOP METRIC OVERVIEW CARDS (5 Key Metrics) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <MetricCard
           title="Active Customers"
           value={data?.active_customers ?? 0}
@@ -105,7 +129,7 @@ export const Dashboard: React.FC = () => {
           icon={Activity}
           trend="0 active"
           colorScheme="blue"
-          subtitle="Tracked carrying objects"
+          subtitle="Carrying object tracking"
         />
         <MetricCard
           title="Active System Alerts"
@@ -125,20 +149,29 @@ export const Dashboard: React.FC = () => {
           subtitle="Risk score ≥ 60.0"
           onClick={() => navigate('/customers?high_risk_only=true')}
         />
+        <MetricCard
+          title="Total Incidents"
+          value={data?.total_incidents ?? 0}
+          icon={FileText}
+          trend="SQLite DB"
+          colorScheme="emerald"
+          subtitle="Logged incident records"
+          onClick={() => navigate('/analytics')}
+        />
       </div>
 
-      {/* LEVEL 2 — Main Content (Left: Live Activity | Right: Priority Alert) */}
+      {/* MAIN CONTENT (Left: Live Activity Timeline | Right: Priority Alert) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Left Column: Live Activity Timeline (2 Cols) */}
         <GlassCard 
           className="lg:col-span-2"
-          title="Live Activity Timeline"
-          subtitle="Chronological sequence of customer interactions"
+          title="Live Surveillance Activity"
+          subtitle="Chronological sequence of customer interactions and zone signals"
           action={
             <span className="flex items-center space-x-1.5 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 nova-neon-glow">
               <Zap className="w-3 h-3 animate-pulse" />
-              <span>Live Telemetry</span>
+              <span>Live Events</span>
             </span>
           }
         >
@@ -147,7 +180,7 @@ export const Dashboard: React.FC = () => {
               {eventsTimeline.map((evt: Event, idx: number) => (
                 <div 
                   key={evt.id || idx}
-                  className="p-3 bg-slate-900/70 rounded-xl border border-slate-800/80 flex items-center justify-between hover:border-slate-700 transition-all cursor-pointer"
+                  className="p-3.5 bg-slate-900/80 rounded-xl border border-slate-800/80 flex items-center justify-between hover:border-slate-700 transition-all cursor-pointer nova-glass-hover"
                   onClick={() => evt.customer_id && navigate(`/customers/${evt.customer_id}`)}
                 >
                   <div className="flex items-center space-x-3">
@@ -172,13 +205,13 @@ export const Dashboard: React.FC = () => {
           )}
         </GlassCard>
 
-        {/* Right Column: Priority Alert (Single Highest Priority Alert) */}
+        {/* Right Column: Priority Decision Support Alert */}
         <GlassCard 
           title="Priority Decision Support Alert"
           subtitle="Highest priority unresolved activity signal"
         >
           {priorityAlert ? (
-            <div className="space-y-4 p-4 bg-slate-900/90 rounded-2xl border border-rose-500/30 nova-neon-glow">
+            <div className="space-y-4 p-5 bg-slate-900/90 rounded-2xl border border-rose-500/40 nova-neon-glow">
               <div className="flex items-center justify-between">
                 <StatusBadge type="severity" value={priorityAlert.severity} />
                 <span className="text-xs font-mono font-bold text-rose-400">Risk Score: {priorityAlert.risk_score}</span>
@@ -198,7 +231,7 @@ export const Dashboard: React.FC = () => {
                 onClick={() => navigate(`/alerts/${priorityAlert.id}`)}
                 className="w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-xl text-xs flex items-center justify-center space-x-2 shadow-lg shadow-cyan-600/20 transition-all nova-neon-glow"
               >
-                <span>Review Alert</span>
+                <span>Review Alert Details</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -213,32 +246,32 @@ export const Dashboard: React.FC = () => {
 
       </div>
 
-      {/* LEVEL 3 — Video Processing Jobs (Compact List) */}
+      {/* ACTIVE VIDEO PROCESSING JOBS */}
       <GlassCard 
-        title="Active Video Processing"
+        title="Active Video Processing Workspace"
         subtitle="Recent OpenCV + YOLO + ByteTrack intelligence jobs"
         action={
           <button
             onClick={() => navigate('/videos')}
             className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 flex items-center space-x-1"
           >
-            <span>All Videos</span>
+            <span>All Video Feeds</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         }
       >
         {recentVideos && recentVideos.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {recentVideos.map((vid) => (
               <div 
                 key={vid.id}
                 onClick={() => navigate(`/videos/${vid.id}`)}
-                className="p-4 bg-slate-900/80 rounded-xl border border-slate-800 hover:border-slate-700 transition-all cursor-pointer space-y-3"
+                className="p-4 bg-slate-900/80 rounded-xl border border-slate-800 hover:border-cyan-500/40 transition-all cursor-pointer space-y-3 nova-glass-hover"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Video className="w-4 h-4 text-cyan-400" />
-                    <span className="text-xs font-bold text-slate-200 truncate max-w-[140px]">{vid.original_filename}</span>
+                    <span className="text-xs font-bold text-slate-200 truncate max-w-[130px]">{vid.original_filename}</span>
                   </div>
                   <StatusBadge type="video_status" value={vid.processing_status} />
                 </div>

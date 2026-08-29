@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, Video as VideoIcon, AlertCircle, CheckCircle2, Cpu, Activity, ArrowRight, ChevronDown, ChevronUp, AlertTriangle } from 'lucide-react';
+import { 
+  Upload, Video as VideoIcon, AlertCircle, CheckCircle2, Cpu, Activity, 
+  ArrowRight, ChevronDown, ChevronUp, AlertTriangle, Play, Zap, FileVideo, ShieldCheck
+} from 'lucide-react';
 import { apiService } from '../services/api';
 import { Video } from '../types';
 import { StatusBadge } from '../components/StatusBadge';
@@ -12,6 +15,7 @@ export const Videos: React.FC = () => {
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [uploading, setUploading] = useState<boolean>(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [videoStatuses, setVideoStatuses] = useState<Record<number, any>>({});
   const [expandedTechId, setExpandedTechId] = useState<number | null>(null);
   const [showErrorModalId, setShowErrorModalId] = useState<number | null>(null);
@@ -56,17 +60,28 @@ export const Videos: React.FC = () => {
     return () => clearInterval(interval);
   }, [videos]);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedFile(file);
+      handleFileUpload(file);
+    }
+  };
+
   const handleFileUpload = async (file: File) => {
     try {
       setUploading(true);
       setMessage(null);
       const uploaded = await apiService.uploadVideo(file);
-      setMessage({ text: `Video '${uploaded.original_filename}' uploaded successfully! AI processing initiated.`, type: 'success' });
+      setMessage({ 
+        text: `Video '${uploaded.original_filename}' uploaded successfully! Initiating OpenCV + YOLO + ByteTrack processing...`, 
+        type: 'success' 
+      });
       await loadVideos();
     } catch (err: any) {
       if (isVercelNoBackend) {
         setMessage({ 
-          text: 'Vercel Hosted Demo Notice: This Vercel deployment only hosts the frontend UI. The Python backend (OpenCV/YOLO/ByteTrack) runs locally at http://localhost:8002. Please use http://localhost:5173 to test live video uploads.', 
+          text: 'Vercel Hosted Demo Notice: This Vercel deployment hosts the UI frontend. The Python computer vision pipeline runs locally at http://localhost:8002. Use http://localhost:5173 to test video uploads.', 
           type: 'error' 
         });
       } else {
@@ -92,9 +107,15 @@ export const Videos: React.FC = () => {
     <div className="space-y-8">
       {/* Title */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-100 tracking-tight">Surveillance Video Feeds</h1>
+        <h1 className="text-2xl font-bold text-slate-100 tracking-tight flex items-center space-x-3">
+          <span>Video Intelligence</span>
+          <span className="flex items-center space-x-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 nova-neon-glow">
+            <Zap className="w-3.5 h-3.5 animate-pulse" />
+            <span>AI Active Engine</span>
+          </span>
+        </h1>
         <p className="text-xs text-slate-400 mt-1">
-          Upload video files and execute OpenCV + YOLO + ByteTrack intelligence processing
+          Real-time AI surveillance and behavioral risk analysis
         </p>
       </div>
 
@@ -114,50 +135,59 @@ export const Videos: React.FC = () => {
         </div>
       )}
 
-      {/* Upload Zone */}
-      <GlassCard title="Upload Surveillance Video Feed">
-        <div 
-          onClick={() => fileInputRef.current?.click()}
-          className="border-2 border-dashed border-slate-800 hover:border-cyan-500/50 bg-slate-900/50 hover:bg-cyan-500/10 rounded-2xl p-8 text-center cursor-pointer transition-all space-y-3"
-        >
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={(e) => {
-              if (e.target.files && e.target.files[0]) {
-                handleFileUpload(e.target.files[0]);
-              }
-            }}
-            accept=".mp4,.avi,.mov,.mkv,.webm"
-            className="hidden"
-          />
-          <div className="p-3 bg-slate-900 rounded-full border border-slate-800 text-cyan-400 w-12 h-12 mx-auto flex items-center justify-center shadow-lg nova-neon-glow">
-            <Upload className="w-5 h-5" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-slate-200">
-              {uploading ? 'Uploading surveillance video...' : 'Click to select or drag video file'}
-            </p>
-            <p className="text-xs text-slate-500 mt-1">Supported formats: MP4, AVI, MOV, MKV, WEBM (Max 500MB)</p>
-          </div>
-        </div>
+      {/* Prominent Upload Area */}
+      <GlassCard title="Upload Surveillance Video">
+        <div className="space-y-4">
+          <p className="text-xs text-slate-400">
+            Analyze customer movement, shelf interaction and suspicious behavior using computer vision models.
+          </p>
 
-        {message && (
-          <div className={`mt-4 p-3.5 rounded-xl text-xs flex items-center space-x-2 ${
-            message.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
-          }`}>
-            {message.type === 'success' ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <AlertCircle className="w-4 h-4 text-rose-400" />}
-            <span>{message.text}</span>
+          <div 
+            onClick={() => fileInputRef.current?.click()}
+            className="border-2 border-dashed border-slate-800 hover:border-cyan-500/50 bg-slate-900/60 hover:bg-cyan-500/10 rounded-2xl p-8 text-center cursor-pointer transition-all space-y-4 nova-glass-hover"
+          >
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept=".mp4,.avi,.mov,.mkv,.webm"
+              className="hidden"
+            />
+            <div className="p-4 bg-slate-900 rounded-full border border-slate-800 text-cyan-400 w-14 h-14 mx-auto flex items-center justify-center shadow-lg nova-neon-glow">
+              <Upload className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-100">
+                {uploading ? 'Uploading surveillance video...' : 'Click to select or drag video file'}
+              </p>
+              <p className="text-xs text-slate-500 mt-1">Supported formats: MP4, AVI, MOV, MKV, WEBM (Max 500MB)</p>
+            </div>
+
+            {selectedFile && (
+              <div className="inline-flex items-center space-x-2 bg-slate-950 px-4 py-2 rounded-xl border border-slate-800 text-xs font-mono text-cyan-400">
+                <FileVideo className="w-4 h-4 text-cyan-400" />
+                <span>{selectedFile.name} ({(selectedFile.size / (1024 * 1024)).toFixed(1)} MB)</span>
+              </div>
+            )}
           </div>
-        )}
+
+          {message && (
+            <div className={`p-4 rounded-xl text-xs flex items-center space-x-3 ${
+              message.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'
+            }`}>
+              {message.type === 'success' ? <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" /> : <AlertCircle className="w-5 h-5 text-rose-400 flex-shrink-0" />}
+              <span>{message.text}</span>
+            </div>
+          )}
+        </div>
       </GlassCard>
 
-      {/* Video Feed Directory List */}
-      <GlassCard title="Video Directory & Processing Feeds">
+      {/* Video Directory List */}
+      <GlassCard title="Video Intelligence Directory & Processing Jobs">
         {loading ? (
-          <LoadingSpinner label="Fetching video feed records..." />
+          <LoadingSpinner label="Fetching video intelligence records..." />
         ) : videos.length > 0 ? (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {videos.map((vid) => {
               const liveStatus = videoStatuses[vid.id] || {};
               const currentProgress = liveStatus.progress !== undefined ? liveStatus.progress : (vid.progress_percent || 0);
@@ -169,20 +199,23 @@ export const Videos: React.FC = () => {
               return (
                 <div 
                   key={vid.id}
-                  className="p-5 bg-slate-900/80 rounded-2xl border border-slate-800 space-y-4 hover:border-slate-700 transition-all"
+                  className="p-6 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-5 hover:border-cyan-500/30 transition-all nova-glass"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div 
                       onClick={() => navigate(`/videos/${vid.id}`)}
-                      className="flex items-center space-x-3.5 cursor-pointer group"
+                      className="flex items-center space-x-4 cursor-pointer group"
                     >
-                      <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-cyan-400 shadow-sm group-hover:border-cyan-500/40 transition-colors">
-                        <VideoIcon className="w-5 h-5" />
+                      <div className="p-3.5 bg-slate-950 rounded-2xl border border-slate-800 text-cyan-400 shadow-sm group-hover:border-cyan-500/50 transition-colors nova-neon-glow">
+                        <VideoIcon className="w-6 h-6" />
                       </div>
                       <div>
-                        <h3 className="text-sm font-bold text-slate-100 group-hover:text-cyan-400 transition-colors">{vid.original_filename}</h3>
-                        <div className="flex items-center space-x-3 text-[11px] text-slate-400 mt-0.5 font-mono">
-                          <span>ID: #{vid.id}</span>
+                        <h3 className="text-base font-bold text-slate-100 group-hover:text-cyan-400 transition-colors flex items-center space-x-2">
+                          <span>{vid.original_filename}</span>
+                          <span className="text-xs font-mono font-normal text-slate-500">#{vid.id}</span>
+                        </h3>
+                        <div className="flex items-center space-x-3 text-xs text-slate-400 mt-1 font-mono">
+                          <span>Uploaded: {new Date(vid.upload_time).toLocaleTimeString()}</span>
                           <span>•</span>
                           <span>Duration: {vid.duration_seconds ? `${vid.duration_seconds}s` : 'N/A'}</span>
                         </div>
@@ -192,62 +225,51 @@ export const Videos: React.FC = () => {
                     <div className="flex items-center space-x-3">
                       <StatusBadge type="video_status" value={vid.processing_status} />
                       <button
-                        onClick={() => handleProcessTrigger(vid.id)}
-                        disabled={vid.processing_status === 'PROCESSING'}
-                        className={`inline-flex items-center space-x-1.5 px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition-all ${
-                          vid.processing_status === 'PROCESSING'
-                            ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                            : 'bg-cyan-600 hover:bg-cyan-500 text-white shadow-cyan-600/20 nova-neon-glow'
-                        }`}
+                        onClick={() => navigate(`/videos/${vid.id}`)}
+                        className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-xl text-xs shadow-md nova-neon-glow transition-all flex items-center space-x-2"
                       >
-                        <Cpu className={`w-4 h-4 ${vid.processing_status === 'PROCESSING' ? 'animate-spin' : ''}`} />
-                        <span>{vid.processing_status === 'PROCESSING' ? 'Processing...' : 'Run AI Pipeline'}</span>
+                        <span>Inspect Feed Workspace</span>
+                        <ArrowRight className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
 
-                  {/* Compact Progress Bar for PROCESSING status */}
-                  {vid.processing_status === 'PROCESSING' && (
-                    <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-                      <div className="flex items-center justify-between text-xs font-medium text-slate-300">
-                        <span className="flex items-center space-x-2 text-cyan-400">
-                          <Activity className="w-4 h-4 animate-pulse" />
-                          <span className="truncate max-w-[280px]">{statusMsg}</span>
-                        </span>
-                        <span className="font-mono font-bold text-cyan-400">{currentProgress.toFixed(1)}%</span>
-                      </div>
-                      <div className="w-full bg-slate-900 h-2 rounded-full overflow-hidden">
-                        <div 
-                          className="bg-cyan-500 h-full rounded-full transition-all duration-300 nova-neon-glow"
-                          style={{ width: `${Math.min(100, currentProgress)}%` }}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between text-[11px] pt-1">
-                        <button 
-                          onClick={() => setExpandedTechId(isExpanded ? null : vid.id)}
-                          className="text-slate-400 hover:text-slate-200 flex items-center space-x-1 font-mono"
-                        >
-                          <span>{isExpanded ? 'Hide Technical Details' : 'Show Technical Details'}</span>
-                          {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-                        </button>
-                        <span className="text-slate-500 font-mono">OpenCV + YOLO + ByteTrack</span>
-                      </div>
+                  {/* Processing Status Banner & Progress Indicator Bar */}
+                  <div className="bg-slate-950 p-5 rounded-xl border border-slate-800 space-y-3">
+                    <div className="flex items-center justify-between text-xs font-semibold text-slate-200">
+                      <span className="flex items-center space-x-2 text-cyan-400 font-mono">
+                        <Activity className={`w-4 h-4 ${vid.processing_status === 'PROCESSING' ? 'animate-pulse' : ''}`} />
+                        <span className="truncate max-w-[320px]">{statusMsg}</span>
+                      </span>
+                      <span className="font-mono font-bold text-cyan-400">{currentProgress.toFixed(1)}%</span>
+                    </div>
 
-                      {/* Progressive Disclosure Collapsible Technical Details */}
-                      {isExpanded && (
-                        <div className="mt-3 p-3 bg-slate-900 rounded-lg border border-slate-800 text-[11px] font-mono text-slate-400 grid grid-cols-2 gap-2">
-                          <div>Current Frame: <strong className="text-slate-200">{currentFrame}</strong></div>
-                          <div>Total Frames: <strong className="text-slate-200">{vid.total_frames || 'N/A'}</strong></div>
-                          <div>Frame Skip: <strong className="text-slate-200">1</strong></div>
-                          <div>Detection Model: <strong className="text-slate-200">yolov8n.pt</strong></div>
-                        </div>
+                    <div className="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-slate-800">
+                      <div 
+                        className={`h-full rounded-full transition-all duration-300 ${
+                          vid.processing_status === 'COMPLETED' ? 'bg-emerald-500 nova-neon-glow' :
+                          vid.processing_status === 'FAILED' ? 'bg-rose-500' : 'bg-cyan-500 nova-neon-glow'
+                        }`}
+                        style={{ width: `${Math.min(100, currentProgress)}%` }}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-1">
+                      <span>Frame: <strong className="text-slate-200">{currentFrame}</strong> / {vid.total_frames || 'N/A'}</span>
+                      {vid.processing_status === 'COMPLETED' ? (
+                        <span className="text-emerald-400 font-bold flex items-center space-x-1">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>AI ANALYSIS COMPLETE</span>
+                        </span>
+                      ) : (
+                        <span>Status: <strong className="text-cyan-400 uppercase">{vid.processing_status}</strong></span>
                       )}
                     </div>
-                  )}
+                  </div>
 
                   {/* FAILED Status: Concise Error Indicator */}
                   {vid.processing_status === 'FAILED' && (
-                    <div className="p-3 bg-rose-950/40 border border-rose-900/60 rounded-xl flex items-center justify-between text-xs">
+                    <div className="p-3.5 bg-rose-950/40 border border-rose-900/60 rounded-xl flex items-center justify-between text-xs">
                       <div className="flex items-center space-x-2 text-rose-300">
                         <AlertTriangle className="w-4 h-4 text-rose-400 flex-shrink-0" />
                         <span>Processing failed</span>
@@ -285,7 +307,11 @@ export const Videos: React.FC = () => {
             })}
           </div>
         ) : (
-          <p className="text-xs text-slate-500 text-center py-8">No surveillance videos uploaded yet</p>
+          <div className="py-12 text-center text-xs text-slate-500 space-y-2">
+            <VideoIcon className="w-10 h-10 mx-auto text-slate-600" />
+            <p className="font-semibold text-slate-400">No surveillance footage yet</p>
+            <p className="text-slate-600">Select or drag a surveillance video feed above to initiate AI processing</p>
+          </div>
         )}
       </GlassCard>
     </div>

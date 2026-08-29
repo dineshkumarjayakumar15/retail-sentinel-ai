@@ -1,15 +1,16 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { 
-  LayoutDashboard, AlertTriangle, BarChart3, Video, Settings, ShieldCheck 
+  LayoutDashboard, AlertTriangle, BarChart3, Video, Settings, ShieldCheck, Users 
 } from 'lucide-react';
 
 export const Sidebar: React.FC = () => {
   const primaryNavItems = [
     { label: 'Dashboard', path: '/', icon: LayoutDashboard },
+    { label: 'Video Intelligence', path: '/videos', icon: Video },
     { label: 'Alerts', path: '/alerts', icon: AlertTriangle },
     { label: 'Analytics', path: '/analytics', icon: BarChart3 },
-    { label: 'Videos', path: '/videos', icon: Video },
+    { label: 'Customers', path: '/customers', icon: Users },
   ];
 
   return (
@@ -21,8 +22,11 @@ export const Sidebar: React.FC = () => {
             <ShieldCheck className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="font-bold text-slate-100 tracking-tight text-base leading-none">Retail Sentinel</h1>
-            <span className="text-[10px] font-semibold tracking-wider text-cyan-400 uppercase">AI Intelligence</span>
+            <h1 className="font-bold text-slate-100 tracking-tight text-sm leading-none">RETAIL SENTINEL AI</h1>
+            <div className="flex items-center space-x-1.5 mt-1">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping inline-block" />
+              <span className="text-[10px] font-bold tracking-wider text-emerald-400 uppercase">AI SYSTEM ONLINE</span>
+            </div>
           </div>
         </div>
 
@@ -68,11 +72,8 @@ export const Sidebar: React.FC = () => {
 
         {/* Compact Telemetry Indicator */}
         <div className="p-3 bg-slate-900/80 border border-slate-800 rounded-xl flex items-center justify-between text-[11px]">
-          <span className="text-slate-400 font-medium">System Telemetry</span>
-          <span className="flex h-2 w-2 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </span>
+          <span className="text-slate-400 font-medium">YOLOv8 + ByteTrack</span>
+          <span className="text-cyan-400 font-mono font-bold">15 FPS</span>
         </div>
       </div>
     </aside>
